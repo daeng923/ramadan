@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: transparent; margin: 0; padding: 10px; overflow: hidden; }
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .animate-pulse-soft { animation: pulse-soft 3s infinite; }
+    </style>
+</head>
+<body>
+    <div id="highlight-section" class="p-1 bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] shadow-2xl border-4 border-[#800000]/20">
+        <div class="p-6 md:p-10">
+            <div class="text-center mb-8">
+                <span class="inline-block bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 animate-pulse-soft">Agenda Terdekat</span>
+                <h2 id="judul-kegiatan" class="text-2xl md:text-4xl font-black text-white leading-tight">Memuat Agenda...</h2>
+                <p id="tema-kegiatan" class="text-red-400 text-xs md:text-base font-bold mt-2 uppercase tracking-wide italic">---</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 items-center bg-white/5 p-6 rounded-[2rem] border border-white/10 text-left">
+                <div class="flex items-center gap-4 border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-6">
+                    <div class="w-16 h-16 bg-[#800000] rounded-2xl flex flex-col items-center justify-center text-white shadow-lg shrink-0">
+                        <span id="label-bulan" class="text-[10px] font-bold uppercase">RAM</span>
+                        <span id="label-tanggal" class="text-2xl font-black leading-none">--</span>
+                    </div>
+                    <div>
+                        <p id="nama-pemateri" class="font-bold text-base leading-tight text-white">---</p>
+                        <p id="jabatan-pemateri" class="text-red-400 text-[10px] font-medium mt-1 uppercase tracking-wider">---</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="flex items-start gap-3 text-white">
+                        <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <div class="text-xs text-white"><p id="hari-tanggal" class="font-bold">---</p><p id="tanggal-hijriah" class="text-slate-400">---</p></div>
+                    </div>
+                    <div class="flex items-start gap-3 text-white text-xs">
+                        <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p id="waktu-kegiatan" class="font-bold">---</p>
+                    </div>
+                    <div class="flex items-start gap-3 text-white text-xs">
+                        <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                        <p id="lokasi-kegiatan" class="font-bold leading-tight">---</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5TOa5s6GmnerYw30TEujxG7JkZNw7pyOZbxDF4gkFCHad_en-z8akhLba3SmMbRYhBkltyjGDc1TK/pub?gid=0&single=true&output=csv';
+        async function fetchHighlight() {
+            try {
+                const res = await fetch(csvUrl);
+                const text = await res.text();
+                const rows = text.split('\n');
+                const cols = rows[1].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(v => v.replace(/"/g, ''));
+                document.getElementById('judul-kegiatan').innerText = cols[0];
+                document.getElementById('tema-kegiatan').innerText = cols[1];
+                document.getElementById('nama-pemateri').innerText = cols[2];
+                document.getElementById('jabatan-pemateri').innerText = cols[3];
+                document.getElementById('hari-tanggal').innerText = cols[4];
+                document.getElementById('tanggal-hijriah').innerText = cols[5];
+                document.getElementById('waktu-kegiatan').innerText = cols[6];
+                document.getElementById('lokasi-kegiatan').innerText = cols[7];
+                const tglMatch = cols[4].match(/\d+/);
+                if(tglMatch) document.getElementById('label-tanggal').innerText = tglMatch[0].padStart(2, '0');
+                const blnMatch = cols[4].match(/[a-zA-Z]+/g);
+                if(blnMatch && blnMatch[1]) document.getElementById('label-bulan').innerText = blnMatch[1].substring(0,3);
+            } catch (err) { console.error(err); }
+        }
+        window.onload = fetchHighlight;
+    </script>
+</body>
+</html>
