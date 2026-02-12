@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Shalat Ramadan 1447H</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-950 flex items-center justify-center min-h-screen p-6">
+
+<div class="w-full max-w-5xl">
+    <div class="p-8 md:p-12 bg-slate-900 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
+
+        <div class="text-center mb-10">
+            <h3 class="text-2xl font-black uppercase tracking-widest text-white">
+                Jadwal Shalat & Imsakiyah
+            </h3>
+            <p class="text-red-600 text-[10px] font-bold tracking-[0.4em] mt-2 uppercase italic">
+                📍 Malang Raya & Sekitarnya
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+            <div class="bg-white/5 p-5 rounded-3xl border border-white/10 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 italic">Imsak</p>
+                <p id="imsak" class="text-2xl font-black">--:--</p>
+            </div>
+
+            <div class="bg-white/5 p-5 rounded-3xl border border-white/10 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 italic">Subuh</p>
+                <p id="subuh" class="text-2xl font-black">--:--</p>
+            </div>
+
+            <div class="bg-white/5 p-5 rounded-3xl border border-white/10 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 italic">Dzuhur</p>
+                <p id="zuhur" class="text-2xl font-black">--:--</p>
+            </div>
+
+            <div class="bg-red-700 p-5 rounded-3xl text-center shadow-2xl border-2 border-red-500 transform scale-105">
+                <p class="text-[10px] font-bold text-white/70 uppercase mb-2 italic">Maghrib</p>
+                <p id="magrib" class="text-3xl font-black italic">--:--</p>
+            </div>
+
+            <div class="bg-white/5 p-5 rounded-3xl border border-white/10 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 italic">Isya</p>
+                <p id="isya" class="text-2xl font-black">--:--</p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+async function loadJadwal() {
+    const response = await fetch("ramadan-1447-malang.json");
+    const result = await response.json();
+    const data = result.data;
+
+    const today = new Date();
+    const todayString = today.toISOString().split("T")[0];
+
+    const todayData = data.find(item => item.date === todayString);
+
+    if (todayData) {
+        document.getElementById("imsak").textContent = todayData.imsak;
+        document.getElementById("subuh").textContent = todayData.subuh;
+        document.getElementById("zuhur").textContent = todayData.zuhur;
+        document.getElementById("magrib").textContent = todayData.magrib;
+        document.getElementById("isya").textContent = todayData.isya;
+    }
+}
+
+loadJadwal();
+</script>
+
+</body>
+</html>
