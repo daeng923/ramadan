@@ -5,61 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: transparent; margin: 0; padding: 0; overflow: hidden; }
         .text-flexible { white-space: normal !important; word-wrap: break-word !important; display: block !important; }
+        
+        .font-arabic { 
+            font-family: 'Amiri', serif; 
+            direction: rtl;
+            line-height: 2.2 !important;
+            word-spacing: 0.25rem;
+        }
 
-        /* ANIMASI BERKELIP (BLINK/PULSE) */
-        @keyframes blinker {
-            50% { opacity: 0.3; transform: scale(0.95); }
-        }
-        .animate-attention {
-            animation: blinker 1.5s linear infinite;
-        }
+        @keyframes blinker { 50% { opacity: 0.3; transform: scale(0.95); } }
+        .animate-attention { animation: blinker 1.5s linear infinite; }
     </style>
 </head>
 <body>
     <div id="content-wrapper" class="p-2">
-        <div class="bg-slate-900 rounded-[2.5rem] shadow-2xl border-4 border-[#800000]/20 overflow-hidden">
-            <div class="p-6 md:p-8 text-center border-b border-white/5 bg-slate-900">
-                <span class="animate-attention inline-block bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
-                    Agenda Terdekat
-                </span>
-                
-                <h2 id="judul-kegiatan" class="text-2xl md:text-4xl font-extrabold text-white leading-tight uppercase tracking-tighter">Memuat...</h2>
-                <p id="tema-kegiatan" class="text-red-400 text-xs md:text-base font-bold mt-3 uppercase italic tracking-wide text-flexible">---</p>
-            </div>
-
-            <div class="p-6 md:p-10 space-y-8 bg-white/5">
-                <div class="flex items-start gap-6">
-                    <div class="w-16 h-16 md:w-20 md:h-20 bg-[#800000] rounded-3xl flex flex-col items-center justify-center text-white shadow-lg shrink-0">
-                        <span id="label-bulan" class="text-[10px] font-bold uppercase text-white/70">RAM</span>
-                        <span id="label-tanggal" class="text-2xl md:text-3xl font-black leading-none">--</span>
+        <div id="main-card" class="bg-slate-900 rounded-[2.5rem] shadow-2xl border-4 border-[#800000]/20 overflow-hidden min-h-[350px] flex flex-col justify-center transition-all duration-500">
+            
+            <div id="display-area" class="w-full">
+                <div class="p-8 md:p-12 text-center text-white">
+                    <div class="mb-6 flex justify-center">
+                        <div class="h-1 w-20 bg-emerald-500 rounded-full opacity-50"></div>
                     </div>
-                    <div class="text-flexible text-left text-white">
-                        <p id="nama-pemateri" class="font-bold text-xl md:text-2xl leading-tight">---</p>
-                        <p id="jabatan-pemateri" class="text-red-400 text-[10px] md:text-xs font-semibold uppercase mt-1 tracking-widest">---</p>
-                    </div>
-                </div>
-
-                <div class="space-y-6 pt-6 border-t border-white/10 text-white">
-                    <div class="flex items-start gap-5">
-                        <div class="bg-red-600/20 p-2.5 rounded-xl text-red-500">🗓️</div>
-                        <div class="text-flexible text-left">
-                            <p id="hari-tanggal" class="font-bold text-base md:text-lg">---</p>
-                            <p id="tanggal-hijriah" class="text-slate-400 text-sm mt-1">---</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-5">
-                        <div class="bg-red-600/20 p-2.5 rounded-xl text-red-500">🕒</div>
-                        <p id="waktu-kegiatan" class="font-bold text-base md:text-lg self-center">---</p>
-                    </div>
-                    <div class="flex items-start gap-5">
-                        <div class="bg-red-600/20 p-2.5 rounded-xl text-red-500">📍</div>
-                        <p id="lokasi-kegiatan" class="font-bold text-base md:text-lg leading-snug text-flexible text-left">---</p>
+                    <p class="font-arabic text-3xl md:text-5xl mb-8 text-emerald-400 leading-relaxed px-4">
+                        يٰٓاَيُّهَا الَّذِيْنَ اٰمَنُوْا كُتِبَ عَلَيْكُمُ الصِّيَامُ كَمَا كُتِبَ عَلَى الَّذِيْنَ مِنْ قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُوْنَۙ
+                    </p>
+                    <div class="max-w-2xl mx-auto border-t border-white/10 pt-6 text-center">
+                        <p class="text-sm md:text-base italic text-slate-300 leading-relaxed px-6">
+                            "Wahai orang-orang yang beriman, diwajibkan atas kamu berpuasa sebagaimana diwajibkan atas orang-orang sebelum kamu agar kamu bertakwa" 
+                            <span class="block mt-2 font-bold text-emerald-500/80 NOT-italic">(QS. Al-Baqarah: 183)</span>
+                        </p>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -70,39 +51,128 @@
             try {
                 const res = await fetch(csvUrl);
                 const text = await res.text();
-                const rows = text.split('\n');
-                const dataRow = rows[1];
+                const rows = text.split('\n').filter(row => row.trim() !== "");
+                const dataRows = rows.slice(1); 
                 
-                const cols = [];
-                let current = "";
-                let inQuotes = false;
-                for (let char of dataRow) {
-                    if (char === '"') inQuotes = !inQuotes;
-                    else if (char === ',' && !inQuotes) { cols.push(current.trim()); current = ""; }
-                    else current += char;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); 
+
+                let selectedAgenda = null;
+
+                for (let row of dataRows) {
+                    const cols = parseCSVLine(row);
+                    if (cols.length < 5) continue;
+
+                    const rawDateText = cols[4]; 
+                    const agendaDate = smartParseDate(rawDateText);
+
+                    // Logika: Ambil agenda pertama yang tanggalnya hari ini atau di masa depan
+                    if (agendaDate && agendaDate >= today) {
+                        selectedAgenda = cols;
+                        break; 
+                    }
                 }
-                cols.push(current.trim());
 
-                document.getElementById('judul-kegiatan').innerText = cols[0];
-                document.getElementById('tema-kegiatan').innerText = cols[1];
-                document.getElementById('nama-pemateri').innerText = cols[2];
-                document.getElementById('jabatan-pemateri').innerText = cols[3];
-                document.getElementById('hari-tanggal').innerText = cols[4];
-                document.getElementById('tanggal-hijriah').innerText = cols[5];
-                document.getElementById('waktu-kegiatan').innerText = cols[6];
-                document.getElementById('lokasi-kegiatan').innerText = cols[7];
-
-                const tglMatch = cols[4].match(/\d+/);
-                if(tglMatch) document.getElementById('label-tanggal').innerText = tglMatch[0].padStart(2, '0');
-                const blnMatch = cols[4].match(/[a-zA-Z]+/g);
-                if(blnMatch && blnMatch[1]) document.getElementById('label-bulan').innerText = blnMatch[1].substring(0,3).toUpperCase();
-
+                if (selectedAgenda) {
+                    renderAgenda(selectedAgenda);
+                }
+                
                 setTimeout(() => {
                     const height = document.getElementById('content-wrapper').scrollHeight;
                     window.parent.postMessage({ height: height }, '*');
                 }, 500);
-            } catch (err) { console.error(err); }
+
+            } catch (err) {
+                console.error("Fetch Error:", err);
+            }
         }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = "";
+            let inQuotes = false;
+            for (let char of line) {
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = "";
+                } else current += char;
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function smartParseDate(rawText) {
+            try {
+                const months = {
+                    'januari': 0, 'februari': 1, 'maret': 2, 'april': 3, 'mei': 4, 'juni': 5,
+                    'juli': 6, 'agustus': 7, 'september': 8, 'oktober': 9, 'november': 10, 'desember': 11
+                };
+                
+                const cleanText = rawText.split(',').pop().trim(); 
+                const parts = cleanText.split(/\s+/); 
+                
+                if (parts.length >= 3) {
+                    const day = parseInt(parts[0]);
+                    const month = months[parts[1].toLowerCase()];
+                    const year = parseInt(parts[2]);
+                    
+                    if (!isNaN(day) && month !== undefined && !isNaN(year)) {
+                        return new Date(year, month, day);
+                    }
+                }
+            } catch(e) { return null; }
+            return null;
+        }
+
+        function renderAgenda(cols) {
+            const tglMatch = cols[4].match(/\d+/);
+            const tgl = tglMatch ? tglMatch[0].padStart(2, '0') : '--';
+            const blnMatch = cols[4].match(/[a-zA-Z]+/g);
+            const bln = (blnMatch && blnMatch.length > 1) ? blnMatch[1].substring(0,3).toUpperCase() : 'RAM';
+
+            document.getElementById('display-area').innerHTML = `
+                <div class="p-6 md:p-8 text-center border-b border-white/5 bg-slate-900">
+                    <span class="animate-attention inline-block bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(220,38,38,0.5)] text-center">
+                        Agenda Terdekat
+                    </span>
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-white leading-tight uppercase tracking-tighter text-center">${cols[0]}</h2>
+                    <p class="text-red-400 text-xs md:text-base font-bold mt-3 uppercase italic tracking-wide text-flexible text-center">${cols[1]}</p>
+                </div>
+
+                <div class="p-6 md:p-10 space-y-8 bg-white/5">
+                    <div class="flex items-start gap-6">
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-[#800000] rounded-3xl flex flex-col items-center justify-center text-white shadow-lg shrink-0">
+                            <span class="text-[10px] font-bold uppercase text-white/70">${bln}</span>
+                            <span class="text-2xl md:text-3xl font-black leading-none">${tgl}</span>
+                        </div>
+                        <div class="text-flexible text-left text-white">
+                            <p class="font-bold text-xl md:text-2xl leading-tight">${cols[2]}</p>
+                            <p class="text-red-400 text-[10px] md:text-xs font-semibold uppercase mt-1 tracking-widest">${cols[3]}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 pt-6 border-t border-white/10 text-white">
+                        <div class="flex items-start gap-5">
+                            <div class="bg-red-600/20 p-2.5 rounded-xl text-red-500 text-xl text-center w-12 text-flexible">🗓️</div>
+                            <div class="text-flexible text-left">
+                                <p class="font-bold text-base md:text-lg">${cols[4]}</p>
+                                <p class="text-slate-400 text-sm mt-1 uppercase font-semibold">${cols[5]}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-5">
+                            <div class="bg-red-600/20 p-2.5 rounded-xl text-red-500 text-xl text-center w-12 text-flexible text-center">🕒</div>
+                            <p class="font-bold text-base md:text-lg self-center">${cols[6]}</p>
+                        </div>
+                        <div class="flex items-start gap-5">
+                            <div class="bg-red-600/20 p-2.5 rounded-xl text-red-500 text-xl text-center w-12 text-flexible text-center">📍</div>
+                            <p class="font-bold text-base md:text-lg leading-snug text-flexible text-left">${cols[7]}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         window.onload = fetchHighlight;
     </script>
 </body>
