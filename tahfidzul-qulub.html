@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cek Jadwal Tahfidzul Qulub UMM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
+    .glass-box { background: white; border-radius: 2.5rem; border: 1px solid #e2e8f0; }
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.4s ease forwards; }
+  </style>
+</head>
+<body class="pb-12 px-4 pt-12">
+
+  <div class="max-w-md mx-auto">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">TAHFIDZUL <span class="text-emerald-600">QULUB</span></h1>
+      <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Cek Jadwal Ramadan Dosen & Karyawan</p>
+    </div>
+
+    <div class="glass-box shadow-xl shadow-slate-200/50 p-6 mb-8 border-none">
+      <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama / NIP Anda</label>
+      <div class="mt-2 flex space-x-2">
+        <input type="text" id="nama" placeholder="Ketik minimal 3 huruf..." 
+          class="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+        <button onclick="cari()" class="bg-slate-900 text-white px-6 rounded-2xl font-bold hover:bg-emerald-700 transition-all active:scale-95 shadow-lg">
+          Cari
+        </button>
+      </div>
+      
+      <div id="list" class="mt-4 bg-white border border-slate-100 rounded-2xl hidden overflow-hidden shadow-inner max-h-60 overflow-y-auto custom-scroll"></div>
+    </div>
+
+    <div id="hasil"></div>
+  </div>
+
+<script>
+// MASUKKAN URL WEB APP GAS ANDA DI SINI
+const API_URL = "https://script.google.com/macros/s/AKfycbwVzQkNdpWdUpYMZWIc0xGQXUszpRw3yz_QBD-sYju2NQURd357rsALi0Pv0AS4iHlS_g/exec";
+
+async function cari() {
+  const n = document.getElementById("nama").value.trim();
+  const list = document.getElementById("list");
+  if(n.length < 3) return;
+
+  list.classList.remove('hidden');
+  list.innerHTML = '<div class="p-5 text-center text-[10px] font-bold text-slate-400 animate-pulse tracking-widest uppercase">MENCARI NAMA...</div>';
+
+  try {
+    const res = await fetch(`${API_URL}?action=cari_nama&nama=${encodeURIComponent(n)}`);
+    const json = await res.json();
+    list.innerHTML = "";
+
+    if(json.hasil.length === 0) {
+      list.innerHTML = '<div class="p-6 text-center text-sm text-rose-500 font-bold">Data tidak ditemukan</div>';
+      return;
+    }
+
+    json.hasil.forEach(h => {
+      const d = document.createElement("div");
+      d.className = "p-4 border-b border-slate-50 last:border-0 cursor-pointer hover:bg-emerald-50 transition-colors";
+      d.innerHTML = `<div class="text-sm font-bold text-slate-700">${h.nama}</div><div class="text-[9px] text-slate-400 uppercase font-medium">NIP: ${h.kode}</div>`;
+      d.onclick = () => detail(h.kode);
+      list.appendChild(d);
+    });
+  } catch(e) {
+    list.innerHTML = '<div class="p-4 text-center text-xs text-rose-500 font-bold">GAGAL TERHUBUNG</div>';
+  }
+}
+
+async function detail(kode) {
+  const hasil = document.getElementById("hasil");
+  document.getElementById("list").classList.add('hidden');
+  
+  hasil.innerHTML = '<div class="text-center p-12"><div class="animate-spin inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full mb-3"></div><p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">MENGAMBIL JADWAL...</p></div>';
+
+  try {
+    const res = await fetch(`${API_URL}?action=detail&kode=${encodeURIComponent(kode)}`);
+    const json = await res.json();
+
+    let html = `
+      <div class="glass-box shadow-2xl p-8 text-center animate-fade-in border-none">
+        <div class="mb-8">
+          <h3 class="text-xl font-extrabold text-slate-900 leading-tight">${json.data.nama}</h3>
+          <p class="text-emerald-600 text-[10px] font-black uppercase tracking-widest mt-2">NIP: ${json.data.nip}</p>
+          <p class="text-slate-400 text-[9px] mt-2 font-bold uppercase px-4">${json.data.unit}</p>
+        </div>
+
+        <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-xl mb-10 relative overflow-hidden">
+          <p class="text-slate-500 text-[9px] uppercase font-black tracking-widest relative z-10">Total Sesi Terdaftar</p>
+          <h2 class="text-7xl font-black mt-1 text-emerald-400 relative z-10">${json.data.total}</h2>
+          <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="text-left space-y-4">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center">
+            <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span> Rincian Jadwal Kegiatan
+          </p>
+          <div class="max-h-80 overflow-y-auto pr-2 custom-scroll space-y-3">
+            ${json.riwayat.map(r => `
+              <div class="bg-slate-50 border border-slate-100 p-5 rounded-[1.5rem] hover:border-emerald-200 transition-all">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-[9px] font-bold bg-white text-emerald-700 border border-emerald-100 px-3 py-1 rounded-full shadow-sm">${r.tanggal}</span>
+                  <span class="text-[10px] font-bold text-slate-400">${r.waktu}</span>
+                </div>
+                <p class="text-sm font-bold text-slate-800 leading-snug">${r.kelas} — ${r.tempat}</p>
+                <p class="text-[11px] text-slate-500 mt-1 italic font-medium">Instruktur: <span class="text-emerald-600">${r.instruktur}</span></p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="mt-8 p-5 bg-amber-50 rounded-[1.5rem] border border-amber-100 text-left">
+           <p class="text-[10px] text-amber-800 leading-relaxed font-semibold">
+            <span class="font-black">INFO:</span> Mohon hadir tepat waktu sesuai lokasi yang tertera. Jadwal dapat berubah sewaktu-waktu sesuai kebijakan panitia.
+          </p>
+        </div>
+
+        <button onclick="location.reload()" class="w-full mt-10 py-3 text-slate-300 text-[10px] font-bold uppercase tracking-[0.2em] hover:text-emerald-600 transition-colors">
+          &larr; Cek Jadwal Lain
+        </button>
+      </div>
+    `;
+    hasil.innerHTML = html;
+  } catch(e) {
+    hasil.innerHTML = '<div class="glass-box p-8 text-center text-rose-500 font-bold border-none shadow-xl">GAGAL MEMUAT JADWAL</div>';
+  }
+}
+</script>
+</body>
+</html>
